@@ -1,0 +1,73 @@
+////
+/// Ratio
+/// @group atoms.ratio
+////
+
+
+/// Ratio map.
+///
+/// Ratios, for example "1-2": 2/1 will create class ratio-1-2 that will have 1 * width == 2 * height,
+/// so key is ratio identifier (string) and second is ratio proportion (w/h).
+/// ---
+/// @property {string} <key>
+///   Ratio identifier (class name suffix).
+/// @property {number} <value>
+///   Ratio proportion (w/h).
+/// @type map
+$atomic-atoms-ratio: (
+    "1-1": 1/1,
+    "1-2": 2/1,
+    "2-1": 1/2
+) !default;
+
+
+/// Generate ratio classes.
+///
+/// Ratios are used mostly for images to set their dimmensions, but can be used easly to
+/// other things as well like blocks, columns - whatever.
+/// `IMPORTANT`: .ratio classes can be used together with grid classes.
+/// ---
+/// @param {string} $breakpoint [all]
+///   Breakpoint for which the class will be generated.
+/// ---
+/// @example scss
+///   @include atomic-atoms-ratio(all);
+/// @example html
+///   <div class="w-12 center">
+///     <div class="w-3 ratio-1-1">
+///       <img class="fill" src="//via.placeholder.com/500x500?text=Atomic">
+///     </div>
+///   </div>
+@mixin atomic-atoms-ratio(
+    $breakpoint: all
+) {
+    // Only for all and base breakpoint
+    @if $breakpoint == all or $breakpoint == base {
+        [class^="ratio-"],
+        [class*=" ratio-"] {
+            position: relative;
+
+            &::before {
+                display: block;
+                content: "";
+                width: 100%;
+            }
+        }
+    }
+
+    @each $ratio-id, $ratio in $atomic-atoms-ratio {
+        @include generate($breakpoint, true, ratio-#{$ratio-id}) {
+            &::before {
+                @if type-of($ratio) == "number" {
+                    @if unitless($ratio) {
+                        padding-top: $ratio * 100%;
+                    } @else {
+                        padding-top: $ratio;
+                    }
+                } @else {
+                    padding-top: $ratio;
+                }
+            }
+        }
+    }
+}

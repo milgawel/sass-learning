@@ -1,0 +1,736 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use './../../animation';
+@use './../../core';
+@use './../../helper';
+@use './../../component';
+@use './variables' as button;
+
+/// Base button class.
+/// ---
+/// @example scss
+///   .button-example {
+///     @include button-base;
+///   }
+@mixin base($inline: false) {
+    @if $inline == false {
+        vertical-align: middle;
+        user-select: none;
+        border: #{core.strip-unit(button.$border-width)}px solid;
+        border-radius: button.$border-radius;
+        padding-top: 0;
+        padding-bottom: 0;
+        font-family: button.$font-family;
+        font-size: button.$font-size;
+        line-height: 1;
+        text-align: center;
+        text-decoration: none;
+
+        &:not(button) {
+            display: inline-flex !important;
+            display/*\**/: inline-block\9; // IE hack
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    touch-action: manipulation;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    transition: button.$transition;
+
+    &[success] {
+        .button__body,
+        .button__success-body {
+            transition: opacity animation.$transition-duration ease-in-out;
+        }
+        .button__success-body {
+            position: absolute;
+            opacity: 0;
+        }
+        @include component.state-success {
+            .button__body {
+                opacity: 0;
+            }
+            .button__success-body {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+/// Add disabled styles to a button by fading the element, reseting the cursor,
+/// and disabling pointer events.
+@mixin is-disabled {
+    cursor: default !important;
+    opacity: 0.5 !important;
+    pointer-events: none !important;
+
+    @if (meta.mixin-exists(hook-is-disabled)) {
+        @include hook-is-disabled;
+    }
+}
+
+/// Add busy styles to a button by fading the element, and disabling pointer events.
+@mixin is-busy {
+    cursor: wait !important;
+    pointer-events: none !important;
+}
+
+/// Change button size based on multiplier.
+/// ---
+/// @param {Map} $height [map.get(component.$height, default)]
+///   Button name from component.$height.
+@mixin size($height: map.get(component.$height, default)) {
+    height: $height;
+    padding-right: $height;
+    padding-left: $height;
+    line-height/*\**/: #{$height}\9; // IE hack
+}
+
+/// Sets the visual style of a button.
+/// ---
+/// @param {string} $name [default]
+///   Name of the color palette.
+@mixin style($name: default) {
+    $_map: map.get(button.$colors-map, $name);
+    $_map-default: map.get(button.$colors-map, default);
+
+    @if map.has-key($_map, background) {
+        background-color: map.get($_map, background);
+    } @else if map.has-key($_map-default, background) {
+        background-color: map.get($_map-default, background);
+    } @else {
+        background-color: transparent;
+    }
+
+    @if map.has-key($_map, border) {
+        border-color: map.get($_map, border);
+    } @else if map.has-key($_map-default, border) {
+        border-color: map.get($_map-default, border);
+    } @else {
+        border-color: transparent;
+    }
+
+    @if map.has-key($_map, color) {
+        color: map.get($_map, color);
+    } @else if map.has-key($_map-default, color) {
+        color: map.get($_map-default, color);
+    } @else {
+        color: inherit;
+    }
+
+    @if map.has-key($_map, box-shadow) {
+        box-shadow: map.get($_map, box-shadow);
+    }
+
+    // Hover
+    // ---
+    @include component.state-hover {
+        .is-not-touchy & {
+            @if map.has-key($_map, background-hover) {
+                background-color: map.get($_map, background-hover);
+            } @else if map.has-key($_map, background) {
+                background-color: map.get($_map, background);
+            }
+
+            @if map.has-key($_map, border-hover) {
+                border-color: map.get($_map, border-hover);
+            } @else if map.has-key($_map, border) {
+                border-color: map.get($_map, border);
+            }
+
+            @if map.has-key($_map, color-hover) {
+                color: map.get($_map, color-hover);
+            } @else if map.has-key($_map, color) {
+                color: map.get($_map, color);
+            }
+
+            @if map.has-key($_map, box-shadow-hover) {
+                box-shadow: map.get($_map, box-shadow-hover);
+            }
+        }
+    }
+
+    // Active
+    // ---
+    @include component.state-active {
+        @if map.has-key($_map, background-active) {
+            background-color: map.get($_map, background-active);
+        }
+
+        @if map.has-key($_map, border-active) {
+            border-color: map.get($_map, border-active);
+        }
+
+        @if map.has-key($_map, color-active) {
+            color: map.get($_map, color-active);
+        }
+
+        @if map.has-key($_map, box-shadow-active) {
+            box-shadow: map.get($_map, box-shadow-active);
+        }
+    }
+
+    // Active
+    // ---
+    @include component.state-focus {
+        @if map.has-key($_map, background-focus) {
+            background-color: map.get($_map, background-focus);
+        }
+
+        @if map.has-key($_map, border-focus) {
+            border-color: map.get($_map, border-focus);
+        }
+
+        @if map.has-key($_map, color-focus) {
+            color: map.get($_map, color-focus);
+        }
+
+        @if map.has-key($_map, box-shadow-focus) {
+            box-shadow: map.get($_map, box-shadow-focus);
+        }
+    }
+
+    @include component.state-busy {
+        @include is-busy;
+    }
+
+    // Disabled
+    // ---
+    @include component.state-disabled {
+        @include is-disabled;
+
+        @if map.has-key($_map, background-disabled) {
+            background-color: map.get($_map, background-disabled);
+        }
+
+        @if map.has-key($_map, border-disabled) {
+            border-color: map.get($_map, border-disabled);
+        }
+
+        @if map.has-key($_map, color-disabled) {
+            color: map.get($_map, color-disabled);
+        }
+
+        @if map.has-key($_map, box-shadow-disabled) {
+            box-shadow: map.get($_map, box-shadow-disabled);
+        }
+    }
+
+    // Error
+    // ---
+    @include component.state-error {
+        @if map.has-key($_map, background-error) {
+            background-color: map.get($_map, background-error);
+        }
+
+        @if map.has-key($_map, border-error) {
+            border-color: map.get($_map, border-error);
+        }
+
+        @if map.has-key($_map, color-error) {
+            color: map.get($_map, color-error);
+        }
+
+        @if map.has-key($_map, box-shadow-error) {
+            box-shadow: map.get($_map, box-shadow-error);
+        }
+    }
+
+    // Success
+    // ---
+    @include component.state-success {
+        @if map.has-key($_map, background-success) {
+            background-color: map.get($_map, background-success);
+        }
+
+        @if map.has-key($_map, border-success) {
+            border-color: map.get($_map, border-success);
+        }
+
+        @if map.has-key($_map, color-success) {
+            color: map.get($_map, color-success);
+        }
+
+        @if map.has-key($_map, box-shadow-success) {
+            box-shadow: map.get($_map, box-shadow-success);
+        }
+    }
+}
+
+/// Sets the visual style of a link.
+/// ---
+/// @param {string} $name [default]
+///   Name of the color palette.
+@mixin inline-style(
+    $color: inherit,
+    $color-hover: $color,
+    $color-focus: $color-hover,
+    $color-active: $color-focus,
+    $color-busy: $color-hover,
+    $color-disabled: $color
+) {
+    color: $color;
+
+    // State hover
+    // ---
+    @include component.state-hover {
+        color: $color-hover;
+    }
+
+    // State focus
+    // ---
+    @include component.state-focus {
+        color: $color-focus;
+    }
+
+    // State active
+    // ---
+    @include component.state-active {
+        color: $color-active;
+    }
+
+    // State busy
+    // ---
+    @include component.state-busy {
+        @include is-busy;
+
+        color: $color-busy;
+    }
+
+    // State disabled
+    // ---
+    @include component.state-disabled {
+        @include is-disabled;
+
+        color: $color-disabled;
+    }
+}
+
+/// Button busy loader animation.
+///
+/// Import this mixin in `.button` class to use that animation.
+@mixin busy-loader($color: map.get(map.get(button.$colors-map, default), color-busy)) {
+    $height: map.get(component.$height, default) * 0.4;
+
+    // Loader animation
+    @keyframes loader {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @include component.state-busy {
+        color: transparent !important;
+        position: relative;
+
+        // Hide standard HTML tags
+        .button__busy {
+            @include helper.visually-hidden;
+        }
+
+        // Loader
+        &::after {
+            animation: loader 0.5s infinite linear;
+            border: 2px solid $color;
+            border-radius: 50%;
+            border-right-color: transparent;
+            border-top-color: transparent;
+            content: '';
+            display: block;
+            height: $height;
+            left: 50%;
+            margin-left: -$height/2;
+            margin-top: -$height/2;
+            position: absolute;
+            top: 50%;
+            width: $height;
+            z-index: 0;
+        }
+    }
+
+    // Button sizes
+    // ---
+    @each $name, $value in map.remove(component.$height, default) {
+        $height: $value * 0.4;
+
+        &-#{$name},
+        .form-#{$name} & {
+            @include component.state-busy {
+                &::after {
+                    height: $height;
+                    width: $height;
+                    margin-left: -$height/2;
+                    margin-top: -$height/2;
+                }
+            }
+        }
+    }
+
+    // Button colors
+    // ---
+    @each $name, $value in map.remove(button.$colors-map, default) {
+        @if map.has-key($value, color-busy) {
+            &-#{$name} {
+                @include component.state-busy {
+                    &::after {
+                        border-color: map.get($value, color-busy);
+                        border-right-color: transparent;
+                        border-top-color: transparent;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Button busy loader animation.
+///
+/// Import this mixin in `.button` class to use that animation.
+@mixin busy-bounce($color: map.get(map.get(button.$colors-map, default), color-busy)) {
+    $height: map.get(component.$height, default) * 0.4;
+
+    /// Bounce animation
+    @keyframes bounce {
+        0%,
+        100% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(0.95);
+        }
+    }
+
+    @include component.state-busy {
+        color: transparent !important;
+        position: relative;
+
+        // Hide standard HTML tags
+        .button__busy {
+            @include helper.visually-hidden;
+        }
+
+        // Bouncing dots
+        &::before,
+        &::after {
+            animation: bounce 2s infinite ease-in-out;
+            content: '';
+            display: block;
+            width: $height;
+            height: $height;
+            border-radius: 50%;
+            background-color: $color;
+            margin-left: -$height/2;
+            margin-top: -$height/2;
+            opacity: 0.5;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+
+        &::after {
+            animation-delay: -1s;
+        }
+    }
+
+    // Button sizes
+    // ---
+    @each $name, $value in map.remove(component.$height, default) {
+        $height: $value * 0.4;
+
+        &-#{$name},
+        .form-#{$name} & {
+            @include component.state-busy {
+                &::before,
+                &::after {
+                    height: $height;
+                    width: $height;
+                    margin-left: -$height/2;
+                    margin-top: -$height/2;
+                }
+            }
+        }
+    }
+
+    // Button colors
+    // ---
+    @each $name, $value in map.remove(button.$colors-map, default) {
+        @if map.has-key($value, color-busy) {
+            &-#{$name} {
+                @include component.state-busy {
+                    &::before,
+                    &::after {
+                        background-color: map.get($value, color-busy);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Button inline busy loader animation.
+///
+/// Import this mixin in main file to use that animation.
+@mixin inline-busy-loader($color: black) {
+    /// Loader animation
+    @keyframes button-inline-busy-loader {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    transition: padding-right animation.$transition-duration ease-in-out;
+
+    &::after {
+        opacity: 0;
+        transition: opacity animation.$transition-duration ease-in-out;
+    }
+
+    @include component.state-busy {
+        &:not(.pos-absolute) {
+            position: relative;
+        }
+
+        display: inline-block;
+        vertical-align: top;
+        padding-right: #{1em * 1.5};
+
+        // Loader
+        // ---
+        &::after {
+            animation: button-inline-busy-loader 0.5s infinite linear;
+            border: 2px solid $color;
+            border-radius: 50%;
+            border-right-color: transparent;
+            border-top-color: transparent;
+            content: '';
+            display: block;
+            height: 1em;
+            right: 0;
+            margin-left: -0.5em;
+            margin-top: -0.5em;
+            position: absolute;
+            top: 50%;
+            width: 1em;
+            z-index: 0;
+            opacity: 1;
+        }
+
+        @each $color-id, $color in get('colors') {
+            &.col-#{$color-id} {
+                &::after {
+                    border-color: $color;
+                    border-right-color: transparent;
+                    border-top-color: transparent;
+                }
+            }
+        }
+    }
+}
+
+/// Button inline busy underline loader animation.
+///
+/// Import this mixin in main file to use that animation.
+@mixin inline-busy-underline($color: black) {
+    /// Button loader animation
+    @keyframes button-inline-busy-underline {
+        0% {
+            left: 0;
+        }
+        50% {
+            left: 90%;
+        }
+        100% {
+            left: 0;
+        }
+    }
+
+    @include component.state-busy {
+        &:not(.pos-absolute) {
+            position: relative;
+        }
+
+        .button__busy {
+            display: none;
+        }
+
+        .button__body {
+            margin-left: 0 !important;
+            transform: none;
+        }
+
+        &::before,
+        &::after {
+            content: '';
+            background-color: $color;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: -0.05em;
+            z-index: 1;
+            height: 1px;
+            pointer-events: none;
+        }
+
+        &::after {
+            width: 10% !important;
+            z-index: 2;
+            background-color: white !important;
+            animation: button-inline-busy-underline 2s infinite;
+        }
+
+        // Links colors
+        // ---
+        // @each $name, $palette in map.remove(component.$link-colors-map, default) {
+        //     &-#{$name} {
+        //         &::after {
+        //             @if map.has-key($palette, color-busy) {
+        //                 background-color: map.get($palette, color-busy);
+        //             } @else if map.has-key($palette, color) {
+        //                 background-color: map.get($palette, color);
+        //             }
+        //         }
+        //     }
+        // }
+
+        @each $color-id, $color in get('colors') {
+            &.col-#{$color-id} {
+                &::after {
+                    background-color: $color;
+                }
+            }
+        }
+    }
+}
+
+/// Button busy underline steps loader animation.
+///
+/// Import this mixin in main file to use that animation.
+@mixin inline-busy-underline-steps($color: black) {
+    /// Button loader animation
+    @keyframes button-inline-busy-underline-steps {
+        to {
+            right: -10%;
+        }
+    }
+
+    @include component.state-busy {
+        &:not(.pos-absolute) {
+            position: relative;
+        }
+
+        .button__busy {
+            display: none;
+        }
+
+        .button__body {
+            margin-left: 0 !important;
+            transform: none;
+        }
+
+        &::after {
+            background-color: $color;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: bottom;
+            animation: button-inline-busy-underline-steps steps(10, end) 1s infinite;
+            content: '';
+            height: 1px;
+            position: absolute;
+            bottom: -0.05em;
+            right: 100%;
+            left: 0;
+            z-index: 1;
+        }
+
+        // Button colors
+        // ---
+        @each $name, $palette in map.remove(component.$link-colors-map, default) {
+            &-#{$name} {
+                &::after {
+                    @if map.has-key($palette, color-busy) {
+                        background-color: map.get($palette, color-busy);
+                    } @else if map.has-key($palette, color) {
+                        background-color: map.get($palette, color);
+                    }
+                }
+            }
+        }
+
+        @each $color-id, $color in get('colors') {
+            &.#{$color-id} {
+                &::after {
+                    background-color: $color;
+                }
+            }
+        }
+    }
+}
+
+/// Default mixin for button.
+/// ---
+@mixin button() {
+    @include base;
+    @include size;
+    @include style;
+
+    // Busy
+    // ---
+    &:not(.busy):not(.is-busy) {
+        .button__busy {
+            @include helper.visually-hidden;
+        }
+    }
+}
+
+/// Default mixin for button inline.
+/// ---
+@mixin inline() {
+    @include base($inline: true);
+    @include inline-style;
+
+    // Hide standard HTML tags
+    // ---
+    .button__busy,
+    .icon {
+        @include helper.visually-hidden;
+    }
+}
+
+@mixin dynamic-styles {
+    // Base button class
+    // ---
+    .button {
+        @include button;
+
+        // Buttons colors
+        // ---
+        @each $id, $_value in button.$colors-map {
+            $append-class: '&';
+
+            @if $id != default {
+                $append-class: '&-#{$id}';
+            }
+
+            #{$append-class} {
+                @include style($id);
+
+                // Button sizes
+                // ---
+                @each $name, $value in component.$height {
+                    .form-#{$name} & {
+                        @include size($value);
+                    }
+                }
+            }
+        }
+    }
+}

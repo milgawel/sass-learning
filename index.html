@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Never more CSS</title>
+    <link rel="stylesheet"
+          href="./css/styles.css">
+</head>
+
+<body>
+    <h1 class="title">Click click</h1>
+    <div class="buttons">
+        <div class="buttons__row"><button class="button--green">Green Button</button>
+            <button class="button--blue right">Blue Button</button>
+        </div>
+        <div class="buttons__row">
+            <button class="button--yellow is-active">Yellow Button</button>
+        </div>
+
+        <ul class="for">
+            <li>cihldren for 1</li>
+            <li>cihldren for 2</li>
+            <li>cihldren for 3</li>
+            <li>cihldren for 4</li>
+            <li>cihldren for 5</li>
+            <li>cihldren for 6</li>
+            <li>cihldren for 7</li>
+        </ul>
+
+        <ul class="forif">
+            <li>cihldren for if 1</li>
+            <li>cihldren for if 2</li>
+            <li>cihldren for if 3</li>
+            <li>cihldren for if 4</li>
+            <li>cihldren for if 5</li>
+            <li>cihldren for if 6</li>
+            <li>cihldren for if 7</li>
+        </ul>
+
+        <ul class="while">
+            <li>cihldren while 1</li>
+            <li>cihldren while 2</li>
+            <li>cihldren while 3</li>
+            <li>cihldren while 4</li>
+            <li>cihldren while 5</li>
+            <li>cihldren while 6</li>
+            <li>cihldren while 7</li>
+        </ul>
+    </div>
+    <script>
+        const buttons = document.querySelectorAll('button')
+        buttons.forEach(button => button.addEventListener('click', () => button.classList.toggle('is-active')))
+
+        buttons.forEach(button => button.addEventListener('dblclick', () => button.classList.add('is-disabled')))
+    </script>
+</body>
+
+</html>

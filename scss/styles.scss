@@ -1,0 +1,136 @@
+$black: #000;
+$green: #2ecc71;
+$blue: #3498db;
+$yellow: #f1c40f;
+$lightGray: #808080;
+$darkGray: #616060;
+
+$backgroundColors: (
+    'greeny': #006400,
+    'bluey': #00008b,
+    'yellowy': #a88613,
+);
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@mixin button {
+    width: 270px;
+    height: 46px;
+    margin-right: 29px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    font-family: arial;
+    font-size: 32px;
+    color: white;
+    transition: all 0.3s;
+    outline: none;
+
+    &--green {
+        @extend .button;
+        background-color: $green;
+        &:hover {
+            background-color: map-get($backgroundColors, greeny);
+        }
+    }
+
+    &--blue {
+        @extend .button;
+        background-color: $blue;
+        &:hover {
+            background-color: map-get($backgroundColors, bluey);
+        }
+    }
+
+    &--yellow {
+        @extend .button;
+        background-color: $yellow;
+        &:hover {
+            background-color: map-get($backgroundColors, yellowy);
+        }
+    }
+
+    &.is-active {
+        border: 2px solid black;
+    }
+
+    &.is-disabled {
+        background-color: $lightGray;
+        border: 2px solid $darkGray;
+        color: $black;
+        pointer-events: none;
+    }
+}
+
+body {
+    font-family: arial;
+}
+
+.title {
+    color: $black;
+    text-align: center;
+    font-size: 64px;
+    margin-top: 28px;
+    transform: translateX(1px);
+}
+
+.right {
+    margin-left: 4px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 43px;
+    // overflow: hidden;
+}
+
+.buttons__row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    transform: translateX(1px);
+}
+
+.button {
+    @include button;
+}
+
+// LEARNING LOOPS
+
+$base-color: rgb(6, 29, 53);
+
+ul li {
+    padding: 10px 15px;
+}
+
+@for $i from 1 through 7 {
+    ul.for li:nth-child(#{$i}) {
+        background-color: lighten($base-color, $i * 10%);
+    }
+}
+
+@for $j from 1 through 7 {
+    @if $j%2 == 0 {
+        ul.forif li:nth-child(#{$j}) {
+            background-color: rgb(189, 43, 43);
+        }
+    } @else {
+        ul.forif li:nth-child(#{$j}) {
+            background-color: yellow;
+        }
+    }
+}
+
+$count: 0;
+
+@while 5 > $count {
+    ul.while li:nth-child(#{$count}) {
+        background-color: pink;
+    }
+    $count: $count + 1;
+}

@@ -1,0 +1,243 @@
+////
+/// Padding
+/// @group atoms.padding
+////
+
+
+/// Padding max factory.
+/// ---
+/// @type number
+$atomic-atoms-padding-max-factory: 4 !default;
+
+
+/// Padding custom factory.
+/// ---
+/// @type list
+$atomic-atoms-padding-custom: 6 8 !default;
+
+
+/// Padding appendixes.
+/// ---
+/// @property {string} abbrev
+///   Abbreviation.
+/// @property {string} property
+///   Property appendix.
+/// @type map
+$atomic-atoms-padding-appendixes: (
+    a: "",
+    t: "-top",
+    r: "-right",
+    b: "-bottom",
+    l: "-left"
+) !default;
+
+
+/// Generate padding classes.
+/// ---
+/// @param {string} $breakpoint [all]
+///   Breakpoint for which the class will be generated.
+/// ---
+/// @example scss
+///   @include atomic-atoms-padding(all);
+@mixin atomic-atoms-padding(
+    $breakpoint: all
+) {
+    $padding-max: strip-unit($atomic-atoms-padding-max-factory);
+
+    // Padding
+    // ---
+    @each $class-name, $property in $atomic-atoms-padding-appendixes {
+        $class-name: p-#{$class-name};
+
+        @each $size-id, $_base-size in $atomic-mq-breakpoints {
+            @if map-has-key($atomic-global-size-map, $size-id) {
+                $base-size: map-get($atomic-global-size-map, $size-id);
+
+                @include define($class-name, $size-id) {
+                    padding#{$property}: #{4 * $base-size};
+                }
+
+                @include define(#{$class-name}-i, $size-id) {
+                    padding#{$property}: #{4 * $base-size} !important;
+                }
+
+                @if $breakpoint == all or $breakpoint == $size-id {
+                    @if $atomic-mq-responsive {
+                        $min: mq-min($size-id);
+
+                        @if $min {
+                            @media screen and (min-width: $min) {
+                                @include wrapper {
+                                    .#{$class-name} {
+                                        @include extend($class-name, $size-id);
+                                    }
+                                }
+                            }
+                        } @else {
+                            @include wrapper {
+                                .#{$class-name} {
+                                    @include extend($class-name, $size-id);
+                                }
+                            }
+                        }
+                    } @else {
+                        @include wrapper($size-id) {
+                            .#{$class-name} {
+                                @include extend($class-name, $size-id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @for $i from 1 through $padding-max {
+        @each $class-name, $property in $atomic-atoms-padding-appendixes {
+            $class-name: p-#{$class-name}-#{$i};
+
+            @each $size-id, $_base-size in $atomic-mq-breakpoints {
+                @if map-has-key($atomic-global-size-map, $size-id) {
+                    $base-size: map-get($atomic-global-size-map, $size-id);
+
+                    @include define($class-name, $size-id) {
+                        padding#{$property}: #{$i * $base-size};
+                    }
+
+                    @include define(#{$class-name}-i, $size-id) {
+                        padding#{$property}: #{$i * $base-size} !important;
+                    }
+
+                    @if $breakpoint == all or $breakpoint == $size-id {
+                        @if $atomic-mq-responsive {
+                            $min: mq-min($size-id);
+
+                            @if $min {
+                                @media screen and (min-width: $min) {
+                                    @include wrapper {
+                                        .#{$class-name} {
+                                            @include extend($class-name, $size-id);
+                                        }
+                                    }
+
+                                    @include wrapper {
+                                        .#{$class-name}-#{$size-id} {
+                                            @include extend(#{$class-name}-i, $size-id);
+                                        }
+                                    }
+                                }
+                            } @else {
+                                @include wrapper {
+                                    .#{$class-name} {
+                                        @include extend($class-name, $size-id);
+                                    }
+                                }
+
+                                @include wrapper {
+                                    .#{$class-name}-#{$size-id} {
+                                        @include extend(#{$class-name}-i, $size-id);
+                                    }
+                                }
+                            }
+                        } @else {
+                            @include wrapper($size-id) {
+                                .#{$class-name} {
+                                    @include extend($class-name, $size-id);
+                                }
+                            }
+
+                            @include wrapper($size-id) {
+                                .#{$class-name}-#{$size-id} {
+                                    @include extend(#{$class-name}-i, $size-id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @if type-of($atomic-atoms-padding-custom) == list or type-of($atomic-atoms-padding-custom) == number {
+        @each $padding in $atomic-atoms-padding-custom {
+            @if unitless($padding) == false {
+                $padding: strip-unit($padding);
+            }
+
+            // Generate media query classes without already generated classes
+            @if $padding > $padding-max and $padding != 0 {
+                @each $class-name, $property in $atomic-atoms-padding-appendixes {
+                    $class-name: p-#{$class-name}-#{$padding};
+
+                    @each $size-id, $_base-size in $atomic-mq-breakpoints {
+                        @if map-has-key($atomic-global-size-map, $size-id) {
+                            $base-size: map-get($atomic-global-size-map, $size-id);
+
+                            @include define($class-name, $size-id) {
+                                padding#{$property}: #{$padding * $base-size};
+                            }
+
+                            @include define(#{$class-name}-i, $size-id) {
+                                padding#{$property}: #{$padding * $base-size} !important;
+                            }
+
+                            @if $breakpoint == all or $breakpoint == $size-id {
+                                @if $atomic-mq-responsive {
+                                    $min: mq-min($size-id);
+
+                                    @if $min {
+                                        @media screen and (min-width: $min) {
+                                            @include wrapper {
+                                                .#{$class-name} {
+                                                    @include extend($class-name, $size-id);
+                                                }
+                                            }
+
+                                            @include wrapper {
+                                                .#{$class-name}-#{$size-id} {
+                                                    @include extend(#{$class-name}-i, $size-id);
+                                                }
+                                            }
+                                        }
+                                    } @else {
+                                        @include wrapper {
+                                            .#{$class-name} {
+                                                @include extend($class-name, $size-id);
+                                            }
+                                        }
+
+                                        @include wrapper {
+                                            .#{$class-name}-#{$size-id} {
+                                                @include extend(#{$class-name}-i, $size-id);
+                                            }
+                                        }
+                                    }
+                                } @else {
+                                    @include wrapper($size-id) {
+                                        .#{$class-name} {
+                                            @include extend($class-name, $size-id);
+                                        }
+                                    }
+
+                                    @include wrapper($size-id) {
+                                        .#{$class-name}-#{$size-id} {
+                                            @include extend(#{$class-name}-i, $size-id);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Zero
+    // ---
+    @each $class-name, $property in $atomic-atoms-padding-appendixes {
+        @include generate($breakpoint, true, p-#{$class-name}-0) {
+            padding#{$property}: 0 !important;
+        }
+    }
+}
